@@ -13,6 +13,16 @@ const pool = new Pool({
     port: 7007,
 });
 
+//funções
+
+
+
+ 
+
+
+
+
+
 app.use(express.json());
 
 app.get('/', (req, res) => {
@@ -20,13 +30,26 @@ app.get('/', (req, res) => {
 })
 
 
+//bruxos
+
+
 app.post('/bruxos',async (req, res) => {
     try {
         const { nome, idade, casa, habilidade, status_sangue, patrono} = req.body;
-       
+        let casas_hogwarts = ["Grifinória", "Corvinal", "Conserina", "Lufa-lufa"];
+        let tipo_sangue = ["Sangue puro", "Sangue mestiço", "Trouxa"];
+
+        if (!casas_hogwarts.includes(casa) ) {
+            res.status(500).send('A casa precisa ser: Grifinória, Corvinal, Sonserina ou Lufa-Lufa');
+
+        } else if (!tipo_sangue.includes(status_sangue)){
+            res.status(500).send('A casa precisa ser: Sangue puro, Sangue mestiço ou Trouxa');
+        } else {
+            await pool.query('INSERT INTO bruxos (nome, idade, casa, habilidade, status_sangue, patrono) VALUES ($1, $2, $3, $4, $5, $6)', [nome, idade, casa, habilidade, status_sangue, patrono]);
+            res.status(201).send({mensagem: 'Bruxo adicionado com sucesso'});
+        }
         
-        await pool.query('INSERT INTO bruxos (nome, idade, casa, habilidade, status_sangue, patrono) VALUES ($1, $2, $3, $4, $5, $6)', [nome, idade, casa, habilidade, status_sangue, patrono]);
-        res.status(201).send({mensagem: 'Bruxo adicionado com sucesso'});
+        
     } catch (error) {
         console.error('Erro ao adicionar bruxo', error);
         res.status(500).send('Erro ao adicionar bruxo');
@@ -52,8 +75,18 @@ app.put('/bruxos/:id', async (req, res) => {
         const { id } = req.params;
         const {nome, idade, casa, habilidade, status_sangue, patrono } = req.body;
 
+        let casas_hogwarts = ["Grifinória", "Corvinal", "Conserina", "Lufa-lufa"];
+        let tipo_sangue = ["Sangue puro", "Sangue mestiço", "Trouxa"];
+
+        if (!casas_hogwarts.includes(casa) ) {
+            res.status(500).send('A casa precisa ser: Grifinória, Corvinal, Sonserina ou Lufa-Lufa');
+        } else if (!tipo_sangue.includes(status_sangue)){
+            res.status(500).send('A casa precisa ser: Sangue puro, Sangue mestiço ou Trouxa');
+        } else {
         await pool.query('UPDATE bruxos SET nome = $1, idade = $2, casa = $3, habilidade = $4, status_sangue = $5, patrono = $6 WHERE id = $7', [nome, idade, casa, habilidade, status_sangue, patrono, id])
         res.status(200).send({mensagem: 'Bruxo atualizado com sucesso'})
+        }
+
     } catch (error) {
         console.error('Erro ao atualizar bruxo', error);
         res.status(500).send('Erro ao atualizar bruxo');
@@ -76,6 +109,23 @@ app.get('/bruxos/:id', async(req, res) => {
         res.status(500).send('Erro ao pegar bruxo por ID');
     }
 });
+
+app.get('/bruxos/:nome', async(req, res) => {
+    try {
+        const { nome } = req. params;
+        const resultado = await pool.query('SELECT * FROM bruxos WHERE nome = $1', [nome])
+        if(resultado.rowCount == 0){
+            res.status(404).send({mensagem: 'Nome não encontrado'});
+        }
+        res.json({
+            bruxo: resultado.rows[0],
+        })
+    } catch (error) {
+        console.error('Erro ao pegar bruxo por nome ', error);
+        res.status(500).send('Erro ao pegar bruxo por nome');
+    }
+});
+
 
 app.get('/bruxos', async (req, res) => {
     try {
