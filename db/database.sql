@@ -23,3 +23,4 @@ CREATE TABLE varinhas (
     nucleo VARCHAR(100) NOT NULL,
     data_fabricacao DATE NOT NULL
 );
+
