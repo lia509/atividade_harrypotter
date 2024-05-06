@@ -43,7 +43,7 @@ app.post('/bruxos',async (req, res) => {
             res.status(500).send('A casa precisa ser: Grifinória, Corvinal, Sonserina ou Lufa-Lufa');
 
         } else if (!tipo_sangue.includes(status_sangue)){
-            res.status(500).send('A casa precisa ser: Sangue puro, Sangue mestiço ou Trouxa');
+            res.status(500).send(' O sangue precisa ser: Sangue puro, Sangue mestiço ou Trouxa');
         } else {
             await pool.query('INSERT INTO bruxos (nome, idade, casa, habilidade, status_sangue, patrono) VALUES ($1, $2, $3, $4, $5, $6)', [nome, idade, casa, habilidade, status_sangue, patrono]);
             res.status(201).send({mensagem: 'Bruxo adicionado com sucesso'});
@@ -81,7 +81,7 @@ app.put('/bruxos/:id', async (req, res) => {
         if (!casas_hogwarts.includes(casa) ) {
             res.status(500).send('A casa precisa ser: Grifinória, Corvinal, Sonserina ou Lufa-Lufa');
         } else if (!tipo_sangue.includes(status_sangue)){
-            res.status(500).send('A casa precisa ser: Sangue puro, Sangue mestiço ou Trouxa');
+            res.status(500).send('O sangue precisa ser: Sangue puro, Sangue mestiço ou Trouxa');
         } else {
         await pool.query('UPDATE bruxos SET nome = $1, idade = $2, casa = $3, habilidade = $4, status_sangue = $5, patrono = $6 WHERE id = $7', [nome, idade, casa, habilidade, status_sangue, patrono, id])
         res.status(200).send({mensagem: 'Bruxo atualizado com sucesso'})
